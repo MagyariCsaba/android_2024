@@ -1,0 +1,185 @@
+/**
+ * You can edit, run, and share this code.
+ * play.kotlinlang.org
+ */
+
+import java.util.*
+import kotlin.random.Random
+
+fun main() {
+    //1.
+    println("1.")
+    val sum = 2 + 3 
+    println("SUM = $sum")
+    
+    //2.
+    println("2.")
+    // Declare an immutable list of days of the week
+    val daysOfWeek = listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+    // Iterate over the list and print each day
+    println("Days of the week:")
+    for (day: String in daysOfWeek) {
+        println(day)
+    }
+
+    // Filter and print days starting with the letter 'T'
+    println("\nDays starting with 'T':")
+    val daysStartingWithT = daysOfWeek.filter { it.startsWith("T") }
+    for (day: String in daysStartingWithT) {
+        println(day)
+    }
+
+    // Filter and print days containing the letter 'e'
+    println("\nDays containing the letter 'e':")
+    val daysContainingE = daysOfWeek.filter { it.contains('e') }
+    for (day: String in daysContainingE) {
+        println(day)
+    }
+    
+    // Filter and print days of length 6
+    println("\nDays with a length of 6 characters:")
+    val daysOfLength6 = daysOfWeek.filter { it.length == 6 }
+    for (day in daysOfLength6) {
+        println(day)
+    }
+    
+    //3.
+    println("3.")
+    val start = 1
+    val end = 50
+
+    // Print prime numbers within the range
+    println("Prime numbers between $start and $end:")
+    for (number in start..end) {
+        if (isPrime(number)) {
+            println(number)
+        }
+    }
+    
+    //5.
+    println("5.")
+    val numbers = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    println("Even numbers:")
+    printEvenNumbers(numbers)
+    
+    //4.
+    println("4.")
+    val originalString = "Hello, Kotlin!"
+    println("Original: $originalString")
+
+    //I
+    // Encode the string
+    val encodedString = encode(originalString)
+    println("Encoded: $encodedString")
+
+    // Decode the string
+    val decodedString = decode(encodedString)
+    println("Decoded: $decodedString")
+    
+    //II
+    // Call messageCoding with the encode function
+    val encodedMessage = messageCoding(originalString, ::encode)
+    //println("Encoded Message: $encodedMessage")
+
+    // Call messageCoding with the decode function
+    val decodedMessage = messageCoding(encodedMessage, ::decode)
+    println("Decoded Message: $decodedMessage")
+    
+
+    //6.
+    println("6.")
+    val numbers2 = listOf(1, 2, 3, 4, 5)
+    //val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+    // I Double the elements of a list of integers and print it
+    val doubledNumbers = numbers2.map { it * 2 }
+    println("Doubled numbers: $doubledNumbers")
+
+    // II Print the days of the week capitalized (e.g., MONDAY for Monday)
+    val capitalizedDays = daysOfWeek.map { it.uppercase() }
+    println("Capitalized days: $capitalizedDays")
+
+    // III Print the first character of each day capitalized (e.g., M for Monday)
+    val firstCharCapitalized = daysOfWeek.map { it.first().lowercaseChar() }
+    println("First character of each day: $firstCharCapitalized")
+
+    // IV Print the length of the days (number of characters, e.g., Monday → 6)
+    val dayLengths = daysOfWeek.map { it.length }
+    println("Length of each day: $dayLengths")
+
+    // V Compute the average length of the days (in number of characters)
+    val averageLength = dayLengths.average()
+    println("Average length of days: $averageLength")
+    
+    
+    //7.
+    println("7.")
+    // Convert the immutable list into a mutable one
+    val mutableDaysOfWeek = daysOfWeek.toMutableList()
+
+    // Remove all days containing the letter 'n'
+    mutableDaysOfWeek.removeAll { it.contains('n', ignoreCase = true) }
+    println("Mutable list after removing days containing 'n': $mutableDaysOfWeek")
+
+    // Print each element of the list in a new line together with the index using withIndex()
+    println("\nItems with index:")
+    for ((index, day) in mutableDaysOfWeek.withIndex()) {
+        println("Item at $index is $day")
+    }
+
+    // Sort the result list alphabetically
+    mutableDaysOfWeek.sort()
+    println("\nSorted list: $mutableDaysOfWeek")
+    
+    
+    //8.
+    println("8.")
+    // Generate an array of 10 random integers between 0 and 100
+    val randomArray = Array(10) { Random.nextInt(0, 101) }
+
+    // Print each element of the array in a new line using forEach
+    println("Array elements:")
+    randomArray.forEach { println(it) }
+
+    // Print the array sorted in ascending order
+    val sortedArray = randomArray.sorted()
+    println("\nArray sorted in ascending order: $sortedArray")
+
+    // Check whether the array contains any even number
+    val containsEven = randomArray.any { it % 2 == 0 }
+    println("\nDoes the array contain any even number? $containsEven")
+
+    // Check whether all the numbers are even
+    val allEven = randomArray.all { it % 2 == 0 }
+    println("Are all the numbers even? $allEven")
+
+    // Calculate the average of generated numbers and print it using forEach
+    val average = randomArray.average()
+    println("\nArray average: $average")
+
+    // Using forEach to print average (though not necessary, as it's already printed above)
+    println("\nUsing forEach to print each element and average together:")
+    randomArray.forEach { println("Element: $it, Average: $average") }
+    
+}
+
+fun printEvenNumbers(numbers: IntArray) = numbers.filter { it % 2 == 0 }.forEach { println(it) }
+
+fun isPrime(number: Int): Boolean {
+    if (number < 2) return false
+    for (i in 2..Math.sqrt(number.toDouble()).toInt()) {
+        if (number % i == 0) {
+            return false
+        }
+    }
+    return true
+}
+
+fun encode(input: String): String = Base64.getEncoder().encodeToString(input.toByteArray())
+
+fun decode(encoded: String): String = String(Base64.getDecoder().decode(encoded))
+
+fun messageCoding(msg: String, func: (String) -> String): String {
+    return func(msg)
+}
