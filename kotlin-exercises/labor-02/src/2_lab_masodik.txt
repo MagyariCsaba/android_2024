@@ -1,0 +1,27 @@
+//Problem 2
+
+fun String.nameMonogram(): String{
+    return this.split(" ").map {it[0]}.joinToString("")
+}
+
+fun List<String>.joinWithSeparator(separator: String): String  = this.joinToString(separator)
+
+fun List<String>.longestString(): String? = this.maxByOrNull { it.length }
+
+
+fun main() {
+    
+    //Problem 2 main
+    //1 pont
+    val name = "Nagy Lajos"
+    println(name.nameMonogram())
+    
+    //2 pont
+    val fruits = listOf("appleee", "pear", "melon")
+    val result = fruits.joinWithSeparator("#")
+    println(result)
+    
+    //3 pont
+    val longest = fruits.longestString()
+    println("Longest: $longest")
+}

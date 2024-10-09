@@ -1,0 +1,116 @@
+//Problem 1
+
+
+import java.util.TreeSet
+import java.util.HashSet
+
+// IDictionary interface
+interface IDictionary {
+    fun add(word: String): Boolean
+    fun find(word: String): Boolean
+    fun size(): Int
+}
+
+// ListDictionary class for mocking data (already provided)
+class ListDictionary : IDictionary {
+    private val words = mutableListOf<String>()
+
+    init {
+        mockDictionaryData() // Mock data for testing
+    }
+
+    override fun add(word: String): Boolean = words.add(word)
+
+    override fun find(word: String): Boolean = words.contains(word)
+
+    override fun size(): Int = words.size
+
+    private fun mockDictionaryData() {
+        words.add("a")
+        words.add("aa")
+        words.add("aaa")
+    }
+}
+
+// TreeSetDictionary class
+class TreeSetDictionary private constructor() : IDictionary {
+    private val words = TreeSet<String>()
+
+    override fun add(word: String): Boolean = words.add(word)
+
+    override fun find(word: String): Boolean = words.contains(word)
+
+    override fun size(): Int = words.size
+
+    companion object {
+        private var instance: TreeSetDictionary? = null
+        fun getInstance(): TreeSetDictionary {
+            if (instance == null) {
+                instance = TreeSetDictionary()
+            }
+            return instance!!
+        }
+    }
+}
+
+// HashSetDictionary class
+class HashSetDictionary private constructor() : IDictionary {
+    private val words = HashSet<String>()
+
+    override fun add(word: String): Boolean = words.add(word)
+
+    override fun find(word: String): Boolean = words.contains(word)
+
+    override fun size(): Int = words.size
+
+    companion object {
+        private var instance: HashSetDictionary? = null
+        fun getInstance(): HashSetDictionary {
+            if (instance == null) {
+                instance = HashSetDictionary()
+            }
+            return instance!!
+        }
+    }
+}
+
+// Enum for dictionary types
+enum class DictionaryType {
+    ARRAY_LIST,
+    TREE_SET,
+    HASH_SET
+}
+
+// DictionaryProvider utility class
+object DictionaryProvider {
+    fun createDictionary(type: DictionaryType): IDictionary {
+        return when (type) {
+            DictionaryType.ARRAY_LIST -> ListDictionary()  // No singleton for ListDictionary
+            DictionaryType.TREE_SET -> TreeSetDictionary.getInstance()  // Singleton
+            DictionaryType.HASH_SET -> HashSetDictionary.getInstance()  // Singleton
+        }
+    }
+}
+
+fun main() {
+    //megadjuk a tipust
+    val dictType = DictionaryType.HASH_SET
+
+    // itt hozzuk letre
+    val dict = DictionaryProvider.createDictionary(dictType)
+
+    
+    dict.add("hello")
+    dict.add("world")
+    dict.add("hello")  // duplazodas
+
+    // szavak szama
+    println("Number of words: ${dict.size()}")
+
+    // szavak keresese
+    val word = "world"
+    println("Find '$word': ${dict.find(word)}")
+    
+    val missingWord = "missing"
+    println("Find '$missingWord': ${dict.find(missingWord)}")
+}

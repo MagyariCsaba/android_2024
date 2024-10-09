@@ -1,0 +1,84 @@
+//Problem 3
+data class Date(
+    val year: Int,
+    val month: Int,
+    val day: Int
+) : Comparable<Date> {
+    // Primary constructor initializes with current date
+    constructor() : this(
+        LocalDate.now().year,
+        LocalDate.now().monthValue,
+        LocalDate.now().dayOfMonth
+    )
+
+    // Check if the date is a valid one
+    fun isValid(): Boolean {
+        return try {
+            LocalDate.of(year, month, day)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    // Check if the year is a leap year
+    fun isLeapYear(): Boolean {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+    }
+
+    // Implementing Comparable interface for natural ordering
+    override fun compareTo(other: Date): Int {
+        return when {
+            this.year != other.year -> this.year - other.year
+            this.month != other.month -> this.month - other.month
+            else -> this.day - other.day
+        }
+    }
+
+    // String representation of the Date
+    override fun toString(): String {
+        return String.format("%04d-%02d-%02d", year, month, day)
+    }
+}
+
+fun main() {
+    //Problem 3 main
+    val validDates = mutableListOf<Date>()
+    val random = Random()
+
+    while (validDates.size < 10) {
+        // Generate random year, month and day
+        val year = random.nextInt(2023 - 1900 + 1) + 1900 // Random year between 1900 and 2023
+        val month = random.nextInt(12) + 1 // Random month between 1 and 12
+        val day = random.nextInt(31) + 1 // Random day between 1 and 31
+
+        val date = Date(year, month, day)
+
+        // Check if the date is valid
+        if (date.isValid()) {
+            validDates.add(date)
+        } else {
+            println("Invalid date: $date")
+        }
+    }
+
+    // Print the valid dates
+    println("\nValid Dates:")
+    validDates.forEach { println(it) }
+
+    // Sort the list naturally and print
+    validDates.sort()
+    println("\nSorted Valid Dates:")
+    validDates.forEach { println(it) }
+
+    // Reverse the sorted list and print
+    validDates.reverse()
+    println("\nReversed Sorted Valid Dates:")
+    validDates.forEach { println(it) }
+
+    // Sort using custom ordering (by day first, then month, then year)
+    validDates.sortWith(compareBy<Date> { it.day }.thenBy { it.month }.thenBy { it.year })
+    println("\nCustom Sorted Valid Dates (by day, then month, then year):")
+    validDates.forEach { println(it) }
+    
+}
