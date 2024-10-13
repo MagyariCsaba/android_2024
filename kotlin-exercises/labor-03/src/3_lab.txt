@@ -1,0 +1,96 @@
+// Data class representing each quiz item
+data class Item(
+    val question: String,
+    val answers: List<String>,
+    val correct: Int // index of the correct answer
+)
+
+// Repository class managing quiz items
+class ItemRepository {
+    private val items: MutableList<Item> = mutableListOf()
+
+    init {
+        // Mock data - initializing the quiz items
+        items.add(Item("What is Kotlin?", listOf("A programming language", "A framework", "A database", "An IDE"), 0))
+        items.add(Item("Which company developed Kotlin?", listOf("Google", "JetBrains", "Microsoft", "Oracle"), 1))
+        items.add(Item("What is the file extension for Kotlin files?", listOf(".kt", ".kotlin", ".java", ".class"), 0))
+        items.add(Item("Which is the correct syntax for a function in Kotlin?", listOf("fun myFunction()", "def myFunction()", "function myFunction()", "fn myFunction()"), 0))
+        items.add(Item("How do you declare a mutable variable in Kotlin?", listOf("var", "val", "let", "mut"), 0))
+        items.add(Item("How do you declare an immutable variable in Kotlin?", listOf("var", "val", "let", "const"), 1))
+        items.add(Item("Which is a Kotlin keyword for null safety?", listOf("safe", "nullable", "null", "null safety"), 2))
+        items.add(Item("Which of the following is not a Kotlin collection type?", listOf("List", "Map", "Set", "Queue"), 3))
+        items.add(Item("What does the 'when' keyword do in Kotlin?", listOf("Replaces switch-case", "Starts a loop", "Declares a variable", "Checks null safety"), 0))
+        items.add(Item("What is the entry point of a Kotlin application?", listOf("main()", "start()", "run()", "init()"), 0))
+    }
+
+    // Fetch random items
+    fun randomItems(count: Int): List<Item> {
+        return items.shuffled().take(count)
+    }
+
+    fun size(): Int = items.size
+}
+
+// Service class that handles fetching random quiz items
+class ItemService(private val itemRepository: ItemRepository) {
+    fun selectRandomItems(count: Int): List<Item> {
+        return itemRepository.randomItems(count)
+    }
+}
+
+// Controller class that manages the quiz flow
+class ItemController(private val itemService: ItemService) {
+    fun quiz(numberOfQuestions: Int) {
+        val questions = itemService.selectRandomItems(numberOfQuestions)
+        var correctAnswers = 0
+
+        for (question in questions) {
+            println("\n${question.question}")
+            for ((index, answer) in question.answers.withIndex()) {
+                println("${index + 1}. $answer")
+            }
+
+            // Wait for user input with validation
+            var userAnswer: Int? = null
+            while (true) {
+                print("Your answer (choose the number): ")
+                val input = readLine()
+                userAnswer = input?.toIntOrNull()
+
+                // Validate the user answer
+                if (userAnswer != null && userAnswer in 1..question.answers.size) {
+                    break // Exit the loop if the answer is valid
+                } else {
+                    println("Invalid input. Please enter a number between 1 and ${question.answers.size}.")
+                }
+            }
+
+            // Check if the answer is correct
+            if (userAnswer != null) {
+                if (userAnswer - 1 == question.correct) {
+                    correctAnswers++
+                }
+            }
+        }
+
+        println("\nQuiz finished! You got $correctAnswers out of $numberOfQuestions correct.")
+    }
+}
+
+// Main function to run the quiz application
+fun main() {
+    val itemRepository = ItemRepository()
+    val itemService = ItemService(itemRepository)
+    val itemController = ItemController(itemService)
+
+    println("Welcome to the Kotlin Quiz!")
+    println("You will answer 5 questions.")
+
+    // Set the number of questions to a fixed value
+    val numberOfQuestions = 5
+
+    // Ensure we do not request more questions than available
+    val questionsToAsk = if (numberOfQuestions > itemRepository.size()) itemRepository.size() else numberOfQuestions
+
+    itemController.quiz(questionsToAsk)
+}
