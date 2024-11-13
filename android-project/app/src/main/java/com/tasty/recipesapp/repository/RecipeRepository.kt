@@ -10,14 +10,14 @@ import java.io.IOException
 
 class RecipeRepository(private val context: Context) {
 
-    // Load recipes from JSON file in assets and map them to RecipeModel
+
     fun getRecipes(): List<RecipeModel> {
-        val json = loadJsonFromAssets("recipes.json") ?: return emptyList()
+        val json = loadJsonFromAssets("more_recipes.json") ?: return emptyList()
         val recipeDtoList: List<RecipeDTO> = parseJsonToDto(json)
         return recipeDtoList.map { it.toModel() }
     }
 
-    // Load JSON data from the assets directory
+
     private fun loadJsonFromAssets(fileName: String): String? {
         return try {
             context.assets.open(fileName).bufferedReader().use { it.readText() }
@@ -27,7 +27,7 @@ class RecipeRepository(private val context: Context) {
         }
     }
 
-    // Parse JSON string to a list of RecipeDTO objects
+
     private fun parseJsonToDto(json: String): List<RecipeDTO> {
         val listType = object : TypeToken<List<RecipeDTO>>() {}.type
         return Gson().fromJson(json, listType)

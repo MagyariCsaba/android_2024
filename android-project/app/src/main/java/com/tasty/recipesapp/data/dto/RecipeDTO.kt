@@ -19,6 +19,8 @@ data class RecipeDTO(
 
 fun RecipeDTO.toModel(): RecipeModel {
     return RecipeModel(
-        name = this.name
+        recipeID = this.recipeID,
+        name = this.name,
+        description = this.description
     )
 }

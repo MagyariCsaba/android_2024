@@ -1,9 +1,9 @@
 package com.tasty.recipesapp.domain.model
 
 data class RecipeModel(
-    //val recipeID: Int,
+    val recipeID: Int,
     val name: String,
-//    val description: String,
+    val description: String,
 //    val thumbnailUrl: String,
 //    val keywords: String,
 //    val isPublic: Boolean,
