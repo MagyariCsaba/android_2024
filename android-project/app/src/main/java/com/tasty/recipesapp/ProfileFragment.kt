@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tasty.recipesapp.adapter.RecipeAdapter
 import com.tasty.recipesapp.domain.model.RecipeModel
 import com.tasty.recipesapp.viewmodel.RecipeListViewModel
@@ -43,6 +44,12 @@ class ProfileFragment : Fragment() {
             recyclerView.adapter = recipeAdapter
         }
 
+        // Set up FloatingActionButton for adding a new recipe
+        val addRecipeFab = rootView.findViewById<FloatingActionButton>(R.id.addRecipeFab)
+        addRecipeFab.setOnClickListener {
+            navigateToNewRecipe()
+        }
+
         return rootView
     }
 
@@ -50,6 +57,14 @@ class ProfileFragment : Fragment() {
     private fun navigateToRecipeDetail(recipe: RecipeModel) {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, RecipeDetailFragment())
+            .commit()
+    }
+
+    // Navigation function to navigate to NewRecipeFragment
+    private fun navigateToNewRecipe() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, NewRecipeFragment())
+            .addToBackStack(null) // Add to back stack for proper back navigation
             .commit()
     }
 }
