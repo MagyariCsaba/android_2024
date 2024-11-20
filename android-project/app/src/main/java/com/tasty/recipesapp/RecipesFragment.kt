@@ -1,38 +1,64 @@
 package com.tasty.recipesapp
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.tasty.recipesapp.adapter.RecipeAdapter
+import com.tasty.recipesapp.domain.model.RecipeModel
 import com.tasty.recipesapp.viewmodel.RecipeListViewModel
-import com.tasty.recipesapp.viewmodel.RecipeListViewModelFactory
+import androidx.navigation.fragment.findNavController
+import java.io.Serializable
 
-class RecipesFragment : Fragment(R.layout.fragment_recipes) {
+class RecipesFragment : Fragment() {
 
+    private lateinit var recipeViewModel: RecipeListViewModel
+    private lateinit var recipeAdapter: RecipeAdapter
 
-    private val viewModel: RecipeListViewModel by viewModels {
-        RecipeListViewModelFactory(requireContext())
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // Inflate the layout for this fragment
+        val rootView = inflater.inflate(R.layout.fragment_recipes, container, false)
+
+        // Initialize RecyclerView
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.recipesRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Initialize ViewModel
+        recipeViewModel = ViewModelProvider(this).get(RecipeListViewModel::class.java)
+        recipeViewModel.fetchRecipeData()
+
+        // Initialize Adapter with empty list initially
+        recipeAdapter = RecipeAdapter(emptyList()) { recipe -> navigateToRecipeDetail(recipe) }
+        recyclerView.adapter = recipeAdapter
+
+        // Observe the recipe list from ViewModel and update RecyclerView
+        recipeViewModel.recipeList.observe(viewLifecycleOwner) { recipes ->
+            // Update adapter with new recipe list
+            recipeAdapter = RecipeAdapter(recipes) { recipe -> navigateToRecipeDetail(recipe) }
+            recyclerView.adapter = recipeAdapter
+        }
+
+        return rootView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    // Navigation function to navigate to RecipeDetailFragment with selected recipe data
+    private fun navigateToRecipeDetail(recipe: RecipeModel) {
+        val fragment = RecipeDetailFragment()
+        fragment.arguments = Bundle().apply {
+            putInt("recipe", recipe.id)
+        }
 
-
-        viewModel.fetchRecipes()
-
-
-        viewModel.recipes.observe(viewLifecycleOwner, Observer { recipes ->
-            // Log each recipe's details to Logcat
-            for (recipe in recipes) {
-                //Log.d("RecipeData", "Recipe ID: ${recipe.recipeID}")
-                Log.d("RecipeData", "Recipe Name: ${recipe.name}")
-                Log.d("RecipeData", "Recipe Description: ${recipe.description}")
-                // Add more properties as needed
-            }
-        })
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

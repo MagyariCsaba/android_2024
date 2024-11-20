@@ -19,8 +19,15 @@ data class RecipeDTO(
 
 fun RecipeDTO.toModel(): RecipeModel {
     return RecipeModel(
-        recipeID = this.recipeID,
+        id = this.recipeID,
         name = this.name,
-        description = this.description
+        description = this.description,
+        thumbnailUrl = this.thumbnailUrl,
+        keywords = this.keywords,
+        isPublic = this.isPublic,
+        userEmail = this.userEmail,
+        originalVideoUrl = this.originalVideoUrl,
+        country = this.country,
+        numServings = this.numServings
     )
 }

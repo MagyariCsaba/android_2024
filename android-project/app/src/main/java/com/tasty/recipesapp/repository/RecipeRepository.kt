@@ -10,26 +10,42 @@ import java.io.IOException
 
 class RecipeRepository(private val context: Context) {
 
-
-    fun getRecipes(): List<RecipeModel> {
-        val json = loadJsonFromAssets("more_recipes.json") ?: return emptyList()
-        val recipeDtoList: List<RecipeDTO> = parseJsonToDto(json)
-        return recipeDtoList.map { it.toModel() }
+    fun getAllRecipes(): List<RecipeModel> {
+        val recipeDtos = readAllRecipesFromJson(context)
+        return recipeDtos.map { it.toModel() }
     }
 
-
-    private fun loadJsonFromAssets(fileName: String): String? {
-        return try {
-            context.assets.open(fileName).bufferedReader().use { it.readText() }
+    private fun readAllRecipesFromJson(context: Context): List<RecipeDTO> {
+        val gson = Gson()
+        val assetManager = context.assets
+        val recipeList = mutableListOf<RecipeDTO>()
+        try {
+            val inputStream = assetManager.open("more_recipes.json")
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            val jsonString = String(buffer, Charsets.UTF_8)
+            val type = object : TypeToken<List<RecipeDTO>>() {}.type
+            recipeList.addAll(gson.fromJson(jsonString, type))
         } catch (e: IOException) {
             e.printStackTrace()
-            null
         }
+        return recipeList
     }
 
-
-    private fun parseJsonToDto(json: String): List<RecipeDTO> {
-        val listType = object : TypeToken<List<RecipeDTO>>() {}.type
-        return Gson().fromJson(json, listType)
+    private fun RecipeDTO.toModel(): RecipeModel {
+        return RecipeModel(
+            id = this.recipeID,
+            name = this.name,
+            description = this.description,
+            thumbnailUrl = this.thumbnailUrl,
+            keywords = this.keywords,
+            isPublic = this.isPublic,
+            userEmail = this.userEmail,
+            originalVideoUrl = this.originalVideoUrl,
+            country = this.country,
+            numServings = this.numServings
+        )
     }
 }
