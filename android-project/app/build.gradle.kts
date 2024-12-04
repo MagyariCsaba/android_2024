@@ -52,6 +52,8 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
+
+
     // Room dependencies
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
@@ -61,4 +63,13 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
+    // Retrofit core library
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Gson converter (optional, for JSON serialization/deserialization)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Logging Interceptor (optional, for debugging HTTP requests/responses)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 }
