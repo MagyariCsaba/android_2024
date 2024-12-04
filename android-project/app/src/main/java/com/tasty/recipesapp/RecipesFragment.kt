@@ -37,13 +37,14 @@ class RecipesFragment : Fragment() {
         recipeViewModel.fetchRecipeData()
 
         // Initialize Adapter with empty list initially
-        recipeAdapter = RecipeAdapter(emptyList()) { recipe -> navigateToRecipeDetail(recipe) }
-        recyclerView.adapter = recipeAdapter
 
         // Observe the recipe list from ViewModel and update RecyclerView
         recipeViewModel.recipeList.observe(viewLifecycleOwner) { recipes ->
             // Update adapter with new recipe list
-            recipeAdapter = RecipeAdapter(recipes) { recipe -> navigateToRecipeDetail(recipe) }
+            recipeAdapter = RecipeAdapter(recipes.toMutableList(),
+                onItemClick = { recipe -> navigateToRecipeDetail(recipe) },
+                onDeleteClick = {}
+            )
             recyclerView.adapter = recipeAdapter
         }
 

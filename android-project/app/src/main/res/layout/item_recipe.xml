@@ -41,5 +41,14 @@
             android:textSize="14sp"
             android:textColor="#666"
             android:text="Recipe Description" />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_gravity="end" />
+
+
     </LinearLayout>
 </LinearLayout>

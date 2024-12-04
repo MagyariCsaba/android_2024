@@ -3,6 +3,7 @@ package com.tasty.recipesapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,14 +12,16 @@ import com.tasty.recipesapp.R
 import com.tasty.recipesapp.domain.model.RecipeModel
 
 class RecipeAdapter(
-    private val recipes: List<RecipeModel>,
-    private val onItemClick: (RecipeModel) -> Unit
+    private val recipes: MutableList<RecipeModel>,  // MutableList, hogy módosíthassuk a listát
+    private val onItemClick: (RecipeModel) -> Unit,
+    private val onDeleteClick: (RecipeModel) -> Unit  // Törlés esemény hozzáadása
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val recipeName: TextView = itemView.findViewById(R.id.recipeNameTextView)
         private val recipeDescription: TextView = itemView.findViewById(R.id.recipeDescriptionTextView)
         private val recipeImage: ImageView = itemView.findViewById(R.id.recipeImageView)
+        private val deleteButton: Button = itemView.findViewById(R.id.deleteButton)  // Törlés gomb
 
         fun bind(recipe: RecipeModel) {
             // Név beállítása
@@ -35,6 +38,11 @@ class RecipeAdapter(
 
             // Kattintási esemény kezelése
             itemView.setOnClickListener { onItemClick(recipe) }
+
+            // Törlés gomb esemény kezelése
+            deleteButton.setOnClickListener {
+                onDeleteClick(recipe)  // A törlés művelet meghívása
+            }
         }
     }
 
@@ -48,4 +56,20 @@ class RecipeAdapter(
     }
 
     override fun getItemCount(): Int = recipes.size
+
+    // Update adapter data
+    fun updateData(newRecipes: MutableList<RecipeModel>) {
+        recipes.clear()
+        recipes.addAll(newRecipes)
+        notifyDataSetChanged()
+    }
+
+    // Funkció a lista frissítésére a törlés után
+    fun removeItem(recipe: RecipeModel) {
+        val position = recipes.indexOf(recipe)
+        if (position >= 0) {
+            recipes.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 }

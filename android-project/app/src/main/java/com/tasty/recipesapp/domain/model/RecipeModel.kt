@@ -13,5 +13,6 @@ data class RecipeModel(
     val country: String,
     val numServings: Int,
     //val components: List<ComponentDTO>,
-    //val instructions: List<InstructionDTO>
+    //val instructions: List<InstructionDTO>,
+    var internalId: Long = 0
 )

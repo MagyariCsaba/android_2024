@@ -11,4 +11,11 @@
         android:layout_height="match_parent"
         android:background="@color/light_blue"/>
 
+    <ImageView
+        android:id="@+id/backgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/kep"
+        android:scaleType="centerCrop" />
+
 </FrameLayout>

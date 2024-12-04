@@ -1,5 +1,6 @@
 package com.tasty.recipesapp
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +10,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
 import com.tasty.recipesapp.adapter.RecipeAdapter
+import com.tasty.recipesapp.domain.model.RecipeEntity
 import com.tasty.recipesapp.domain.model.RecipeModel
-import com.tasty.recipesapp.viewmodel.RecipeListViewModel
+import com.tasty.recipesapp.viewmodel.ProfileViewModel
 
 class ProfileFragment : Fragment() {
 
-    private lateinit var recipeViewModel: RecipeListViewModel
+    private lateinit var profileViewModel: ProfileViewModel
     private lateinit var recipeAdapter: RecipeAdapter
 
     override fun onCreateView(
@@ -30,18 +33,20 @@ class ProfileFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize ViewModel
-        recipeViewModel = ViewModelProvider(this).get(RecipeListViewModel::class.java)
-        recipeViewModel.fetchRecipeData()
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
+        profileViewModel.getAllRecipes()
 
         // Initialize Adapter with empty list initially
-        recipeAdapter = RecipeAdapter(emptyList()) { recipe -> navigateToRecipeDetail(recipe) }
+        recipeAdapter = RecipeAdapter(
+            mutableListOf(), // MutableList to allow dynamic updates
+            onItemClick = { recipe -> navigateToRecipeDetail(recipe) },
+            onDeleteClick = { recipe -> confirmDelete(recipe) }
+        )
         recyclerView.adapter = recipeAdapter
 
-        // Observe the recipe list and display 3 random recipes
-        recipeViewModel.recipeList.observe(viewLifecycleOwner) { recipes ->
-            val randomRecipes = recipes.shuffled().take(3) // Randomly select 3 recipes
-            recipeAdapter = RecipeAdapter(randomRecipes) { recipe -> navigateToRecipeDetail(recipe) }
-            recyclerView.adapter = recipeAdapter
+        // Observe the recipe list and update the adapter
+        profileViewModel.recipeList.observe(viewLifecycleOwner) { recipes ->
+            recipeAdapter.updateData(recipes.toMutableList())
         }
 
         // Set up FloatingActionButton for adding a new recipe
@@ -67,4 +72,25 @@ class ProfileFragment : Fragment() {
             .addToBackStack(null) // Add to back stack for proper back navigation
             .commit()
     }
+
+    // Handle recipe deletion
+    private fun deleteRecipe(recipe: RecipeModel) {
+        profileViewModel.deleteRecipe(recipe)  // Remove from ViewModel
+        recipeAdapter.removeItem(recipe)  // Update adapter
+    }
+
+    private fun confirmDelete(recipe: RecipeModel) {
+        // AlertDialog létrehozása
+        AlertDialog.Builder(requireContext())
+            .setTitle("Törlés megerősítése")
+            .setMessage("Biztosan törölni szeretnéd a(z) ${recipe.name} receptet?")
+            .setPositiveButton("Igen") { _, _ ->
+                // Ha a felhasználó megerősíti, töröljük a receptet
+                profileViewModel.deleteRecipe(recipe)  // ViewModel-ből törlés
+                recipeAdapter.removeItem(recipe)  // Adapter frissítése
+            }
+            .setNegativeButton("Nem", null) // Ha a felhasználó mégsem akarja törölni
+            .show()
+    }
+
 }

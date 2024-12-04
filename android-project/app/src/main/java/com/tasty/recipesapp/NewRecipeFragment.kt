@@ -8,8 +8,10 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.tasty.recipesapp.domain.model.RecipeModel
+import com.tasty.recipesapp.viewmodel.ProfileViewModel
 
 class NewRecipeFragment : Fragment() {
 
@@ -18,6 +20,8 @@ class NewRecipeFragment : Fragment() {
     private lateinit var recipeIngredientsEditText: EditText
     private lateinit var recipeInstructionsEditText: EditText
     private lateinit var saveRecipeButton: Button
+    private lateinit var profileViewModel: ProfileViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,6 +34,7 @@ class NewRecipeFragment : Fragment() {
         recipeIngredientsEditText = rootView.findViewById(R.id.recipeIngredientsEditText)
         recipeInstructionsEditText = rootView.findViewById(R.id.recipeInstructionsEditText)
         saveRecipeButton = rootView.findViewById(R.id.saveRecipeButton)
+        profileViewModel = ViewModelProvider(this).get(ProfileViewModel::class.java)
 
         saveRecipeButton.setOnClickListener {
             val recipe = RecipeModel(
@@ -45,10 +50,7 @@ class NewRecipeFragment : Fragment() {
                 numServings = 1
             )
 
-            // Visszatérünk a ProfileFragment-re és elküldjük a receptet
-            val bundle = bundleOf("newRecipe" to recipe)
-            parentFragmentManager.setFragmentResult("addRecipe", bundle)
-
+            profileViewModel.insertRecipe(recipe)
             findNavController().navigateUp()
         }
 
